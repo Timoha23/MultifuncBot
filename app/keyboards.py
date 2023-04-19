@@ -1,13 +1,18 @@
 from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
-                           ReplyKeyboardMarkup, KeyboardButton)
+                           KeyboardButton, ReplyKeyboardMarkup)
 
-# Создание клавиатуры с нужным функционалом
+
+# Создание inline клавиатуры с нужным функционалом
 multifunc_kb = InlineKeyboardMarkup(row_width=1)
 
-button_weather = InlineKeyboardButton(text='Узнать погоду', callback_data='погода')
-button_currency_convert = InlineKeyboardButton(text='Конвертировать валюту', callback_data='валюта')
-button_send_animal = InlineKeyboardButton(text='Милое животное', callback_data='животное')
-button_make_polls = InlineKeyboardButton(text='Создать опрос', callback_data='опрос')
+button_weather = InlineKeyboardButton(text='Узнать погоду',
+                                      callback_data='погода')
+button_currency_convert = InlineKeyboardButton(text='Конвертировать валюту',
+                                               callback_data='валюта')
+button_send_animal = InlineKeyboardButton(text='Милое животное',
+                                          callback_data='животное')
+button_make_polls = InlineKeyboardButton(text='Создать опрос',
+                                         callback_data='опрос')
 button_cancel = InlineKeyboardButton(text='Отмена',
                                      callback_data='отмена')
 
@@ -26,5 +31,6 @@ menu_keyboard.add(button_funcs).insert(button_help)
 
 # клавиатура повторить попытку/отмена
 else_or_cancel_kb = InlineKeyboardMarkup()
-repeat_button = InlineKeyboardButton(text='Повторить', callback_data='повторить')
+repeat_button = InlineKeyboardButton(text='Повторить',
+                                     callback_data='повторить')
 else_or_cancel_kb.add(button_cancel).add(repeat_button)
