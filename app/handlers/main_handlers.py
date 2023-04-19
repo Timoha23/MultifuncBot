@@ -12,10 +12,13 @@ from keyboards import else_or_cancel_kb, menu_keyboard, multifunc_kb
 
 
 class States(StatesGroup):
+    """
+    Создаем состояния
+    """
+
     callback_type = State()
     weather = State()
     currency_conversion = State()
-    animal_image = State()
     make_poll = State()
     else_or_cancel = State()
 
@@ -174,7 +177,8 @@ async def make_poll(message: types.Message, state: FSMContext):
     data = await poll_validator(message.text)
 
     if data.get('error'):
-        await message.answer(data.get('description'))
+        await message.answer(data.get('description'),
+                             reply_markup=else_or_cancel_kb)
         await States.else_or_cancel.set()
     else:
         try:
