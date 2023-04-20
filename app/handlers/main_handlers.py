@@ -29,7 +29,7 @@ async def start_command(message: types.Message):
     Обработка команды /start
     """
 
-    await message.answer(f"Привет, {message.from_user.username}.",
+    await message.answer(f'Привет, {message.from_user.username}.',
                          reply_markup=menu_keyboard)
 
 
@@ -51,14 +51,14 @@ async def callback_type(callback_query: types.CallbackQuery,
 
     async with state.proxy() as data:
         data['type_callback'] = callback_query.data
-    if data['type_callback'] == "погода":
+    if data['type_callback'] == 'погода':
         await callback_query.message.answer('Напишите город, в котором хотите'
                                             ' узнать погоду:')
         await States.weather.set()
     elif data['type_callback'] == 'валюта':
         await callback_query.message.answer('Напишите валюту и сумму в '
                                             'формате: FROM:TO:AMOUNT'
-                                            ' (Пример: USD:EUR:30)"')
+                                            ' (Пример: USD:EUR:30)')
         await States.currency_conversion.set()
     elif data['type_callback'] == 'животное':
         await animal_image(callback_query.message)
@@ -221,15 +221,15 @@ async def else_or_cancel(callback_query: types.CallbackQuery,
     """
 
     async with state.proxy() as data:
-        data["else_or_cancel"] = callback_query.data
-    if data["else_or_cancel"] == 'отмена':
+        data['else_or_cancel'] = callback_query.data
+    if data['else_or_cancel'] == 'отмена':
         await state.finish()
         # на данном этапе мы не удаляем целиком сообщение (картинку),
         # а только клавиатуру
         if data['type_callback'] == 'животное':
             await callback_query.message.edit_reply_markup(reply_markup=None)
             return
-    elif data["else_or_cancel"] == 'повторить':
+    elif data['else_or_cancel'] == 'повторить':
         if data['type_callback'] == 'погода':
             await States.weather.set()
             await callback_query.message.answer('Введите название города еще '
