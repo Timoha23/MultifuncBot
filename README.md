@@ -24,7 +24,6 @@
 </details>
 
 Функции проекта:
-<details>
 - Определение текущий погоды:
 
 ![gif](https://user-images.githubusercontent.com/103051349/233333236-a328735b-6ee9-41ef-83cf-388170e5f85d.gif)
