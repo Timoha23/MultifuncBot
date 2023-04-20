@@ -8,6 +8,7 @@ async def poll_validator(text):
 
     valid_keys = ['question', 'answers', 'chat_id', 'is_anon']
 
+    # пытаемся преобразовать данные в словарь
     try:
         data = ast.literal_eval(text)
     except Exception as ex:
@@ -52,6 +53,51 @@ async def poll_validator(text):
                             ' числовым значением')
         }
 
+    # проверка на то, что вопрос не превосходит 300 символов
+    if len(data['question']) >= 300:
+        return {
+            'error': 'max_length_question',
+            'error_ex': None,
+            'description': ('Ошибка: Вопрос не должен превышать 300 символов')
+        }
+
+    # проверка на то, что в ключе answers лежит list
+    if isinstance(data['answers'], list) is False:
+        return {
+            'error': 'answers_not_list',
+            'error_ex': None,
+            'description': ('Ошибка: Поле answers. Данное значение принимает'
+                            ' list -> [].')
+            }
+
+    # проверка на то, что варинтов ответа не больше 10
+    if len(data['answers']) > 10:
+        return {
+            'error': 'max_answers',
+            'error_ex': None,
+            'description': ('Ошибка: Вариантов ответа не может быть больше 10')
+        }
+    # и не меньше 2
+    elif len(data['answers']) < 2:
+        return {
+            'error': 'max_answers',
+            'error_ex': None,
+            'description': ('Ошибка: Вариантов ответа не может быть меньше 2')
+        }
+
+    # проверяем что варианты длины вариантов ответов не превышают 100 символов
+
+    for index, ans in enumerate(data['answers']):
+        if len(ans) > 100:
+            return {
+                'error': 'max_length_answer',
+                'error_ex': None,
+                'description': (f'Ошибка: Вариант ответа под номером {index+1}'
+                                f' имеет длину больше 100 символов')
+            }
+
+    # проверка на то, что в ключ is_anon введен один из четырех вариантов
+    # (0,1,True,False)
     try:
         is_anon = int(data['is_anon'])
         if is_anon not in [0, 1]:
@@ -62,14 +108,6 @@ async def poll_validator(text):
             'error_ex': None,
             'description': ('Ошибка: Поле is_anon. Данное значение принимает'
                             ' только 0, 1, True, False')
-            }
-
-    if isinstance(data['answers'], list) is False:
-        return {
-            'error': 'answers_not_list',
-            'error_ex': None,
-            'description': ('Ошибка: Поле answers. Данное значение принимает'
-                            ' list -> [].')
             }
 
     return data
