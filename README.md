@@ -25,14 +25,18 @@
 
 Функции проекта:
 <details>
-<summary>3. Определение текущий погоды ↓:</summary>
-![gif](https://user-images.githubusercontent.com/103051349/233333236-a328735b-6ee9-41ef-83cf-388170e5f85d.gif)
-</details>
+- Определение текущий погоды:
 
+![gif](https://user-images.githubusercontent.com/103051349/233333236-a328735b-6ee9-41ef-83cf-388170e5f85d.gif)
 - Конвертация валют:
+
+![gif](https://user-images.githubusercontent.com/103051349/233334299-31d5c80a-b18c-4b42-a7de-0d34faf0ad59.gif)
 - Отправка картинки с милым животным:
+
+![gif](https://user-images.githubusercontent.com/103051349/233334395-ec9f2bee-f77c-4481-9977-372fc6303d3f.gif)
 - Создание опроса:
 
+![gif](https://user-images.githubusercontent.com/103051349/233334575-ed414136-86c8-4d27-8757-f87746e7462a.gif)
 ### Запуск проекта
 ---
 1. Клонируем:
