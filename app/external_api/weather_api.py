@@ -14,11 +14,11 @@ async def get_weather(city):
     """
 
     async with ClientSession() as session:
-        url = (f'http://api.openweathermap.org/data/2.5/weather?q={city}&'
-               f'appid={API_KEY}&units=metric&lang=ru')
+        url = ('http://api.openweathermap.org/data/2.5/weather')
+        params = {'q': city, 'units': 'metric', 'lang': 'ru', 'appid': API_KEY}
 
         try:
-            async with session.get(url=url) as response:
+            async with session.get(url=url, params=params) as response:
                 weather_json = await response.json()
                 return weather_json
         except Exception as ex:

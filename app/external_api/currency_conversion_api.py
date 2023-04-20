@@ -18,11 +18,11 @@ async def get_conversion(data: dict):
     from_currency = data['from']
     amount = data['amount']
     async with ClientSession() as session:
-        url = (f'https://api.apilayer.com/currency_data/convert?'
-               f'to={to_currency}&from={from_currency}&amount={amount}'
-               f'&apikey={API_KEY}')
+        url = 'https://api.apilayer.com/currency_data/convert'
+        params = {'to': to_currency, 'from': from_currency, 'amount': amount,
+                  'apikey': API_KEY}
         try:
-            async with session.get(url) as response:
+            async with session.get(url=url, params=params) as response:
                 currency_json = await response.json()
                 return currency_json
         except Exception as ex:
