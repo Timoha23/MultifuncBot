@@ -29,7 +29,7 @@ async def start_command(message: types.Message):
     Обработка команды /start
     """
 
-    await message.answer(f'Привет, {message.from_user.username}.',
+    await message.answer(f'Привет, {message.from_user.first_name}.',
                          reply_markup=menu_keyboard)
 
 
@@ -65,11 +65,11 @@ async def callback_type(callback_query: types.CallbackQuery,
     elif data['type_callback'] == 'опрос':
         await callback_query.message.answer(
             'Создайте ваш опрос.\nОбразец: *{\n"question": "заголовок опроса",'
-            '\n"answers": ["вариант1", "вариант2", ...],\n"chat_ID": ID чата'
+            '\n"answers": ["вариант1", "вариант2", ...],\n"chat_id": ID чата'
             ' куда отправить опрос,\n"is_anon": анонимный(1)/неанонимный(0) '
             'опрос\n}*\nПример: *{\n"question": "Любите ли вы лабрадоров?",\n'
             '"answers": ["Да", "Конечно"],\n"chat_id": 1234567890,'
-            '\n"is_anon": 0\n}*', parse_mode='Markdown'
+            '\n"is_anon": 1\n}*', parse_mode='Markdown'
         )
         await States.make_poll.set()
     else:
@@ -187,12 +187,26 @@ async def make_poll(message: types.Message, state: FSMContext):
     """
 
     data = await poll_validator(message.text)
-
     if data.get('error'):
         await message.answer(data.get('description'),
                              reply_markup=else_or_cancel_kb)
         await States.else_or_cancel.set()
     else:
+        # проверяем является ли юзер админом группы, если нет,
+        # то отклоняем создание опроса
+        admins = await bot.get_chat_administrators(chat_id=data['chat_id'])
+        is_admin = False
+        for admin in admins:
+            if message.from_user.id == admin['user']['id']:
+                is_admin = True
+        if is_admin is False:
+            await message.answer(
+                'Вы не являетесь администратором данной группы. '
+                'Ваш запрос на создание опроса отклонен.',
+                reply_markup=else_or_cancel_kb
+            )
+            await States.else_or_cancel.set()
+            return
         try:
             await bot.send_poll(
                 chat_id=data['chat_id'],
