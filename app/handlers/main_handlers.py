@@ -1,10 +1,11 @@
-# Файл с обрабоитчиками
+# Файл с обработчиками
 from datetime import datetime
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.utils.exceptions import BadRequest, ChatNotFound
+
 from core.poll_validate import poll_validator
 from create_bot import bot
 from external_api import animal_api, currency_conversion_api, weather_api
@@ -32,10 +33,11 @@ async def start_command(message: types.Message):
                          reply_markup=menu_keyboard)
 
 
-async def get_funcs(message: types.Message):
+async def funcs(message: types.Message):
     """
-    Обработчик команды /funcs
+    Обработчик показывающий функционал бота
     """
+
     await message.answer('Выбери что тебя интересует',
                          reply_markup=multifunc_kb)
     await States.callback_type.set()
@@ -44,7 +46,7 @@ async def get_funcs(message: types.Message):
 async def callback_type(callback_query: types.CallbackQuery,
                         state: FSMContext):
     """
-    Обработчик колбэка
+    Обработчик колбэка при выборе функции
     """
 
     async with state.proxy() as data:
@@ -55,11 +57,11 @@ async def callback_type(callback_query: types.CallbackQuery,
         await States.weather.set()
     elif data['type_callback'] == 'валюта':
         await callback_query.message.answer('Напишите валюту и сумму в '
-                                            'формате: TO:FROM:AMOUNT'
+                                            'формате: FROM:TO:AMOUNT'
                                             ' (Пример: USD:EUR:30)"')
         await States.currency_conversion.set()
     elif data['type_callback'] == 'животное':
-        await get_animal_image(callback_query.message)
+        await animal_image(callback_query.message)
     elif data['type_callback'] == 'опрос':
         await callback_query.message.answer(
             'Создайте ваш опрос.\nОбразец: *{\n"question": "заголовок опроса",'
@@ -75,7 +77,7 @@ async def callback_type(callback_query: types.CallbackQuery,
     await callback_query.message.delete()
 
 
-async def get_weather(message: types.Message, state: FSMContext):
+async def weather(message: types.Message, state: FSMContext):
     """
     Обработчик погоды
     """
@@ -110,7 +112,7 @@ async def get_weather(message: types.Message, state: FSMContext):
         await States.else_or_cancel.set()
 
 
-async def get_currency_conversion(message: types.Message, state: FSMContext):
+async def currency_conversion(message: types.Message, state: FSMContext):
     """
     Обработчик конвертации валют
     """
@@ -122,7 +124,7 @@ async def get_currency_conversion(message: types.Message, state: FSMContext):
                             reply_markup=else_or_cancel_kb)
         await States.else_or_cancel.set()
     else:
-        data.update({'to': text[0], 'from': text[1], 'amount': text[2]})
+        data.update({'from': text[0], 'to': text[1], 'amount': text[2]})
         wait_message = await message.answer('Ожидаем ответ от сервера...')
         conversion = await currency_conversion_api.get_conversion(data)
         await wait_message.delete()
@@ -133,14 +135,20 @@ async def get_currency_conversion(message: types.Message, state: FSMContext):
                 await state.finish()
                 return
             elif conversion['error']['code'] == 401:
-                await message.reply('Введена некоректная валюта FROM.',
-                                    reply_markup=else_or_cancel_kb)
+                await message.reply(
+                    f'Введена некоректная валюта FROM ({text[0]}).',
+                    reply_markup=else_or_cancel_kb
+                )
             elif conversion['error']['code'] == 402:
-                await message.reply('Введена некоректная валюта TO.',
-                                    reply_markup=else_or_cancel_kb)
+                await message.reply(
+                    f'Введена некоректная валюта TO ({text[1]}).',
+                    reply_markup=else_or_cancel_kb
+                )
             elif conversion['error']['code'] == 403:
-                await message.answer('Введено некоректное число AMOUNT.',
-                                     reply_markup=else_or_cancel_kb)
+                await message.answer(
+                    f'Введено некоректное число AMOUNT ({text[2]}).',
+                    reply_markup=else_or_cancel_kb
+                )
             await States.else_or_cancel.set()
         elif conversion.get('success'):
             result = conversion['result']
@@ -159,13 +167,17 @@ async def get_currency_conversion(message: types.Message, state: FSMContext):
             await state.finish()
 
 
-async def get_animal_image(message: types.Message):
+async def animal_image(message: types.Message):
     """
     Обработчик отправки фото животного
     """
 
-    image = await animal_api.get_animal()
-    await message.answer_photo(image, reply_markup=else_or_cancel_kb)
+    image = await animal_api.get_animal_image()
+    try:
+        await message.answer_photo(image, reply_markup=else_or_cancel_kb)
+    except BadRequest:
+        await message.answer('Ошибка на стороне API. Попробуйте еще раз',
+                             reply_markup=else_or_cancel_kb)
     await States.else_or_cancel.set()
 
 
@@ -212,6 +224,8 @@ async def else_or_cancel(callback_query: types.CallbackQuery,
         data["else_or_cancel"] = callback_query.data
     if data["else_or_cancel"] == 'отмена':
         await state.finish()
+        # на данном этапе мы не удаляем целиком сообщение (картинку),
+        # а только клавиатуру
         if data['type_callback'] == 'животное':
             await callback_query.message.edit_reply_markup(reply_markup=None)
             return
@@ -226,7 +240,7 @@ async def else_or_cancel(callback_query: types.CallbackQuery,
                                                 ' конвертации еще раз:')
         elif data['type_callback'] == 'животное':
             await callback_query.message.edit_reply_markup(reply_markup=None)
-            await get_animal_image(callback_query.message)
+            await animal_image(callback_query.message)
             return
         elif data['type_callback'] == 'опрос':
             await States.make_poll.set()

@@ -10,6 +10,10 @@ API_KEY = os.getenv('CURRENCY_CONVERSION_API')
 
 
 async def get_conversion(data: dict):
+    """
+    Обращаемся к API с конвертацией валют
+    """
+
     to_currency = data['to']
     from_currency = data['from']
     amount = data['amount']

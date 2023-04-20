@@ -23,11 +23,10 @@ multifunc_kb.add(button_cancel)
 
 # Создание основной клавиатуры
 button_funcs = KeyboardButton('Функционал')
-button_help = KeyboardButton('Помощь')
 
 menu_keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
 
-menu_keyboard.add(button_funcs).insert(button_help)
+menu_keyboard.add(button_funcs)
 
 # клавиатура повторить попытку/отмена
 else_or_cancel_kb = InlineKeyboardMarkup()

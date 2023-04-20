@@ -3,7 +3,11 @@ import random
 from aiohttp import ClientSession
 
 
-async def get_animal():
+async def get_animal_image():
+    """
+    Обращаемся к API с картинками животных и получаем картинку
+    """
+
     animals_urls = {
         'dog': 'https://random.dog/woof.json',
         'fox': 'https://randomfox.ca/floof/',
