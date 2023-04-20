@@ -24,11 +24,11 @@
 </details>
 
 Функции проекта:
-- <details>
+<details>
 <summary>3. Определение текущий погоды ↓:</summary>
-
 ![gif](https://user-images.githubusercontent.com/103051349/233333236-a328735b-6ee9-41ef-83cf-388170e5f85d.gif)
 </details>
+
 - Конвертация валют:
 - Отправка картинки с милым животным:
 - Создание опроса:
